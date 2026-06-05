@@ -1,8 +1,11 @@
 package com.victorarakaki.transacoes.transferencia.infrastructure;
 
 import com.victorarakaki.transacoes.conta.infrastructure.ContaEntity;
+import com.victorarakaki.transacoes.transferencia.application.MovimentacaoTipoEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -18,26 +21,33 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "transferencia")
+@Table(name = "movimentacao")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransferenciaEntity {
+public class MovimentacaoEntity {
 
   @Id private UUID id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "conta_origem_id", nullable = false)
-  private ContaEntity contaOrigem;
+  @JoinColumn(name = "conta_id", nullable = false)
+  private ContaEntity conta;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "conta_destino_id", nullable = false)
-  private ContaEntity contaDestino;
+  @JoinColumn(name = "transferencia_id", nullable = false)
+  private TransferenciaEntity transferencia;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "tipo", nullable = false)
+  private MovimentacaoTipoEnum tipo;
 
   @Column(name = "valor", nullable = false)
   private BigDecimal valor;
+
+  @Column(name = "saldo_apos", nullable = false)
+  private BigDecimal saldoApos;
 
   @Column(name = "realizada_em", nullable = false)
   private LocalDateTime realizadaEm;

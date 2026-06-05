@@ -1,4 +1,4 @@
-package com.victorarakaki.transacoes.comum.exception;
+package com.victorarakaki.transacoes.transferencia.application.exception;
 
 public class SaldoInsuficienteException extends RuntimeException {
   public SaldoInsuficienteException(String message) {

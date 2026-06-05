@@ -7,14 +7,14 @@ Aplicação simples que simula transações bancárias
 ## Gerais
 
 ### Utilização da Estrutura quebrada em "Pseudomódulos" representando dominios de negócio
-**Escolha:** Segregar o projeto em pacotes representando o domínio de negócios de forma abstrata, com as camadas de API, Dominio e Infrastrutura dentro.
+**Escolha:** Segregar o projeto em pacotes representando o domínio de negócios de forma abstrata, com as camadas de API, Aplicação e Infrastrutura dentro.
 
 **Trade-off:** Para o escopo do projeto e timebox para execução, a escolha foi realizada para garantir a entrega do escopo no prazo, utilizando uma arquitetura que garanta o minimo de robusteza, manutenbilidade e desacoplamento, sendo facilmente adaptavel para um modulito modular ou uma arquitetura hexagonal se desejável.
 
-### Utilização de CQRS como padrão de contrato para as camadas de dominio
-**Escolha:** Utilizar objetos com responsabilidades segregadas entre comando e consulta para interagir com a camada de dominio, para não criar acoplamento da camada de API no Dominio da aplicação.
+### Utilização de CQRS como padrão de contrato para as camadas de aplicação
+**Escolha:** Utilizar objetos com responsabilidades segregadas entre comando e consulta para interagir com a camada de aplicação, para não criar acoplamento da camada de API. 
 
-**Trade-off:** Pequeno aumento na complexidade e execução de um método da classe mapper para garantir o desacoplamento de camadas e integridade do dominio.
+**Trade-off:** Pequeno aumento na complexidade e execução de um método da classe mapper para garantir o desacoplamento de camadas e integridade das camadas.
 
 #### Retornar o objeto de dominio ao invés do entity.
 **Escolha:** Services retornam um modelo de domínio, evitando expor a entidade JPA para a camada de API.
@@ -43,3 +43,13 @@ Aplicação simples que simula transações bancárias
 o método de notificação se responsabiliza por buscar os nomes e forma de contato dos correntistas para enviar a notificaçao, ele precisa apenas ficar sabendo que a transação ocorreu.
 
 **Trade-off:** Nenhum trade-off negativo, entretanto, é importante para manter a segregação de responsabilidades dos módulos integra, garantindo que o método de notificação pudesse ser abstraído de forma segura sem expor objetos de dominio ou entidades a módulos externos.
+
+## Módulo Transferência
+
+#### Ordenar os IDs das contas antes de realizar o Lock Pessimista para realizar a transferência
+**Escolha:** Ordenar os IDs das contas que são bloqueadas, independente de qual é a Origem ou o Destino para realizar a consultas e efetivar as transferências,
+as contas são buscadas com `PESSIMISTIC_WRITE`, impedindo que duas transferências alterem simultaneamente o mesmo saldo, os locks são sempre obtidos desta forma
+para reduzir o risco de deadlock quando duas transferências envolvendo as mesmas duas contas são recebidas, como por exemplo `Conta A -> Conta B` e `Conta B -> Conta A`
+são recebidas ao mesmo tempo.
+
+**Trade-off:** Manter o fluxo síncrono, simples e consistente para o escopo da API, evitando a complexidade adicional de filas, workers, status assíncrono e reprocessamento.

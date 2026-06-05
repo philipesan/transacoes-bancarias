@@ -1,4 +1,4 @@
-package com.victorarakaki.transacoes.comum.exception;
+package com.victorarakaki.transacoes.transferencia.application.exception;
 
 public class TransferenciaInvalidaException extends RuntimeException {
   public TransferenciaInvalidaException(String message) {
