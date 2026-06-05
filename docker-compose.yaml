@@ -1,13 +1,13 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: digital-bank-postgres
+    container_name: transacao-bancaria-postgres
     restart: unless-stopped
 
     environment:
-      POSTGRES_DB: digital_bank
-      POSTGRES_USER: digital_bank_user
-      POSTGRES_PASSWORD: digital_bank_password
+      POSTGRES_DB: transacao_bancaria
+      POSTGRES_USER: transacao_bancaria
+      POSTGRES_PASSWORD: transacao_bancaria_senha
 
     ports:
       - "5432:5432"
@@ -16,7 +16,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U digital_bank_user -d digital_bank"]
+      test: ["CMD-SHELL", "pg_isready -U transacao_bancaria -d transacao_bancaria"]
       interval: 10s
       timeout: 5s
       retries: 5

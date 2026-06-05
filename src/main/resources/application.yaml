@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/digital_bank
-    username: digital_bank_user
-    password: digital_bank_password
+    url: jdbc:postgresql://localhost:5432/transacao_bancaria
+    username: transacao_bancaria
+    password: transacao_bancaria_senha
     driver-class-name: org.postgresql.Driver
 
   jpa:
