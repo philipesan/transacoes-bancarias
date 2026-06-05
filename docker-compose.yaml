@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: digital-bank-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: digital_bank
+      POSTGRES_USER: digital_bank_user
+      POSTGRES_PASSWORD: digital_bank_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U digital_bank_user -d digital_bank"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
