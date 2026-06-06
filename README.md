@@ -1,5 +1,52 @@
-# transacoes-bancarias
-Aplicação simples que simula transações bancárias
+## Tecnologias utilizadas
+
+- Java 25
+- Spring Boot
+- Spring Web
+- Spring Data JPA
+- PostgreSQL
+- Flyway
+- MapStruct
+- Lombok
+- Docker Compose
+- Testcontainers
+- JUnit 5
+- Mockito
+- ProblemDetail
+
+## Como rodar o projeto
+
+### Pré-requisitos
+
+- Java 25+
+- Maven
+- Docker
+- Docker Compose
+
+#### Executar o projeto
+
+## Executando com Docker
+
+Para subir a aplicação junto com o banco PostgreSQL:
+
+```bash
+docker compose up --build
+```
+
+A API ficará disponível em:
+
+http://localhost:8080
+
+Para remover os containers e volumes:
+
+```bash
+docker compose down -v
+```
+
+## Documentação Swagger
+
+Após executar o projeto, a documentação ficará disponível em:
+http://localhost:8080/swagger-ui/index.html
 
 ## Escopo implementado
 
@@ -13,52 +60,81 @@ Além disso, foi implementada a consulta de movimentações financeiras por cont
 
 # Escolhas Arquiteturais/Design
 
+## Cobertura de testes
+
+Foram implementados testes unitários para os principais serviços da aplicação:
+
+- Criação de contas;
+- Realização de transferências;
+- Consulta de movimentações.
+
+Também foram implementados testes de íntegração para validar:
+
+- Criação de conta via API;
+- Transferência via API;
+- Persistência real de saldos, transferências e movimentações;
+- Rollback transacional em caso de falha;
+- Não envio de notificação quando a transferência falha;
+- Concorrência com múltiplas transferências simultâneas;
+- Transferências cruzadas concorrentes para validar a estratégia de ordenação dos locks.
+
 ## Gerais
 
-### Utilização da Estrutura quebrada em "Pseudomódulos" representando dominios de negócio
-**Escolha:** Segregar o projeto em pacotes representando o domínio de negócios de forma abstrata, com as camadas de API, Aplicação e Infrastrutura dentro.
+### Utilização da Estrutura quebrada em "Pseudomódulos" representando domínios de negócio
+**Escolha:** Segregar o projeto em pacotes representando o domínio de negócios de forma abstrata, com as camadas de API, Aplicação e Infraestruturaa dentro.
 
-**Trade-off:** Para o escopo do projeto e timebox para execução, a escolha foi realizada para garantir a entrega do escopo no prazo, utilizando uma arquitetura que garanta o minimo de robusteza, manutenbilidade e desacoplamento, sendo facilmente adaptavel para um modulito modular ou uma arquitetura hexagonal se desejável.
+**Trade-off:** Para o escopo do projeto e timebox para execução, a escolha foi realizada para garantir a entrega do escopo no prazo, utilizando uma arquitetura que garanta o minimo de robustez, manutenibilidade e desacoplamento, sendo facilmente adaptavel para um monólito modular ou uma arquitetura hexagonal se desejável.
 
 ### Utilização de CQRS como padrão de contrato para as camadas de aplicação
 **Escolha:** Utilizar objetos com responsabilidades segregadas entre comando e consulta para interagir com a camada de aplicação, para não criar acoplamento da camada de API. 
 
 **Trade-off:** Pequeno aumento na complexidade e execução de um método da classe mapper para garantir o desacoplamento de camadas e integridade das camadas.
 
-#### Retornar o objeto de dominio ao invés do entity.
+### Retornar o objeto de domínio ao invés do entity.
 **Escolha:** Services retornam um modelo de domínio, evitando expor a entidade JPA para a camada de API.
 
 **Trade-off:** Isso mantém a persistência encapsulada e permite reaproveitar o retorno em outros fluxos.
 
-#### Realizar validações na camada de Controller e na camada de Service.
-**Escolha:** Validações rápidas do objeto de comando para garantir que a conta é valida, caso a classe seja reaproveitada e chamada fora de um controller validade.
+### Realizar validações na camada de Controller e na camada de Service.
+**Escolha:** Validações rápidas do objeto de comando para garantir que a conta é valida, caso a classe seja reaproveitada e chamada fora de um controller validado.
 
 **Trade-off:** Duplicação das validações, mas ganho substancial na resiliência da aplicação em caso de reaproveitamento da classe service.
 
+### Utilização de ProblemDetail para respostas de erro
+
+**Escolha:** As respostas de erro da API utilizam `ProblemDetail`, recurso disponível no Spring Boot 3 e alinhado ao formato RFC 7807.
+
+**Trade-off:** Estrutura padrão de mercado para retorno de erros em Java, em contrapartida, requer configuração um pouco mais extensiva no Handlers de exceção.
+
+### Utilização de Testcontainers nos testes de íntegração
+
+**Escolha:** Os testes de íntegração utilizam PostgreSQL real por meio de Testcontainers.
+
+**Trade-off:** Os testes ficam mais lentos que testes puramente unitários, mas validam de forma realista a íntegração com banco, migrations Flyway, JPA, constraints e transações.
 
 ## Módulo Conta
 
 ### Criação de Conta
 
-#### Utilizar SaveAndFlush() ao salvar entidade.
+### Utilizar SaveAndFlush() ao salvar entidade.
 **Escolha:** O saveAndFlush é usado para antecipar a validação das constraints do banco, permitindo que violações de integridade sejam capturadas e tratadas pelo handler global.
 
 **Trade-off:** Assume diretamente o controle da transação, ao invés de delegar o controle ao Spring, neste caso, não é totalmente necessário pois não há segregação de camada entre operação de banco e regra de negócio.
 
 ## Módulo Notificação
 
-#### Utilizar um objeto Event como padrão de contrato com o serviço de notificação
+### Utilizar um objeto Event como padrão de contrato com o serviço de notificação
 **Escolha:** O Serviço de notificação recebe este objeto com o ID das contas e o valor da transação
-o método de notificação se responsabiliza por buscar os nomes e forma de contato dos correntistas para enviar a notificaçao, ele precisa apenas ficar sabendo que a transação ocorreu.
+o método de notificação se responsabiliza por buscar os nomes e forma de contato dos correntistas para enviar a notificação, ele precisa apenas ficar sabendo que a transação ocorreu.
 
-**Trade-off:** Nenhum trade-off negativo, entretanto, é importante para manter a segregação de responsabilidades dos módulos integra, garantindo que o método de notificação pudesse ser abstraído de forma segura sem expor objetos de dominio ou entidades a módulos externos.
+**Trade-off:** Nenhum trade-off negativo, entretanto, é importante para manter a segregação de responsabilidades dos módulos íntegra, garantindo que o método de notificação pudesse ser abstraído de forma segura sem expor objetos de domínio ou entidades a módulos externos.
 
 ## Módulo Transferência
 
-#### Ordenar os IDs das contas antes de realizar o Lock Pessimista para realizar a transferência
+### Ordenar os IDs das contas antes de realizar o Lock Pessimista para realizar a transferência
 **Escolha:** Ordenar os IDs das contas que são bloqueadas, independente de qual é a Origem ou o Destino para realizar a consultas e efetivar as transferências,
 as contas são buscadas com `PESSIMISTIC_WRITE`, impedindo que duas transferências alterem simultaneamente o mesmo saldo, os locks são sempre obtidos desta forma
-para reduzir o risco de deadlock quando duas transferências envolvendo as mesmas duas contas são recebidas, como por exemplo `Conta A -> Conta B` e `Conta B -> Conta A`
+para reduzir o risco de deadlock quando duas transferências envolvendo as mesmas duas contas são recebidas ao mesmo tempo, como por exemplo Conta A -> Conta B e Conta B -> Conta A
 são recebidas ao mesmo tempo.
 
 **Trade-off:** Manter o fluxo síncrono, simples e consistente para o escopo da API, evitando a complexidade adicional de filas, workers, status assíncrono e reprocessamento.
