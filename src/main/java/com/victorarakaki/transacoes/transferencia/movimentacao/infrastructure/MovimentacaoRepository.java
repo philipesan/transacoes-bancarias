@@ -1,4 +1,4 @@
-package com.victorarakaki.transacoes.transferencia.infrastructure;
+package com.victorarakaki.transacoes.transferencia.movimentacao.infrastructure;
 
 import java.util.List;
 import java.util.UUID;

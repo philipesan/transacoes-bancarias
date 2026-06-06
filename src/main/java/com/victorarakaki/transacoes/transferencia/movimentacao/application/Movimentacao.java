@@ -1,6 +1,5 @@
-package com.victorarakaki.transacoes.transferencia.application;
+package com.victorarakaki.transacoes.transferencia.movimentacao.application;
 
-import com.victorarakaki.transacoes.conta.application.Conta;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,9 +12,10 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Movimentacao {
+
   private UUID id;
-  private Conta conta;
-  private Transferencia transferencia;
+  private UUID contaId;
+  private UUID transferenciaId;
   private MovimentacaoTipoEnum tipo;
   private BigDecimal valor;
   private BigDecimal saldoApos;

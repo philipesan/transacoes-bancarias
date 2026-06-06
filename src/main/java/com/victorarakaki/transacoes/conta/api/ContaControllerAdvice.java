@@ -2,6 +2,7 @@ package com.victorarakaki.transacoes.conta.api;
 
 import com.victorarakaki.transacoes.conta.application.exception.CriarContaSaldoNegativaException;
 import com.victorarakaki.transacoes.conta.application.exception.NomeInvalidoException;
+import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -9,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.net.URI;
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)

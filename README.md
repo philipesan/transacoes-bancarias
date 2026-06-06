@@ -1,6 +1,15 @@
 # transacoes-bancarias
 Aplicação simples que simula transações bancárias
 
+## Escopo implementado
+
+Foram implementados os requisitos funcionais principais do desafio:
+
+- Cadastro simplificado de contas;
+- Transferência de valores entre contas;
+- Notificação após transferência concluída.
+
+Além disso, foi implementada a consulta de movimentações financeiras por conta, pois o contexto do desafio menciona a necessidade de consulta de movimentações e esse endpoint permite validar os lançamentos gerados pelas transferências.
 
 # Escolhas Arquiteturais/Design
 

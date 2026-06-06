@@ -1,7 +1,8 @@
-package com.victorarakaki.transacoes.transferencia.infrastructure;
+package com.victorarakaki.transacoes.transferencia.movimentacao.infrastructure;
 
 import com.victorarakaki.transacoes.conta.infrastructure.ContaEntity;
-import com.victorarakaki.transacoes.transferencia.application.MovimentacaoTipoEnum;
+import com.victorarakaki.transacoes.transferencia.infrastructure.TransferenciaEntity;
+import com.victorarakaki.transacoes.transferencia.movimentacao.application.MovimentacaoTipoEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
