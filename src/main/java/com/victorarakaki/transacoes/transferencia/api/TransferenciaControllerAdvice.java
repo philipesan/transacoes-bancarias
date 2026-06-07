@@ -1,6 +1,5 @@
 package com.victorarakaki.transacoes.transferencia.api;
 
-import com.victorarakaki.transacoes.transferencia.application.exception.ContaNaoEncontradaException;
 import com.victorarakaki.transacoes.transferencia.application.exception.SaldoInsuficienteException;
 import com.victorarakaki.transacoes.transferencia.application.exception.TransferenciaInvalidaException;
 import java.net.URI;
@@ -19,27 +18,13 @@ public class TransferenciaControllerAdvice {
 
     private static final URI PROBLEMA_CONTA = URI.create("/problemas/transferencias");
 
-    @ExceptionHandler(ContaNaoEncontradaException.class)
-    public ProblemDetail tratarContaNaoEncontrada(ContaNaoEncontradaException ex) {
-        if (log.isWarnEnabled()) {
-            log.warn("Conta não encontrada: {}", ex.getMessage());
-        }
-
-        return problema(
-                HttpStatus.NOT_FOUND,
-                "Conta não encontrada",
-                ex.getMessage(),
-                "CONTA_NAO_ENCONTRADA"
-        );
-    }
-
     @ExceptionHandler(SaldoInsuficienteException.class)
     public ProblemDetail tratarSaldoInsuficiente(SaldoInsuficienteException ex) {
         if (log.isWarnEnabled()) {
             log.warn("Saldo insuficiente para realizar operação: {}", ex.getMessage());
         }
 
-        return problema(
+        return criarProblema(
                 HttpStatus.BAD_REQUEST,
                 "Saldo insuficiente",
                 ex.getMessage(),
@@ -53,7 +38,7 @@ public class TransferenciaControllerAdvice {
             log.warn("Transferência inválida: {}", ex.getMessage());
         }
 
-        return problema(
+        return criarProblema(
                 HttpStatus.BAD_REQUEST,
                 "Transferência inválida",
                 ex.getMessage(),
@@ -61,7 +46,7 @@ public class TransferenciaControllerAdvice {
         );
     }
 
-    private ProblemDetail problema(
+    private ProblemDetail criarProblema(
             HttpStatus status,
             String titulo,
             String detalhe,

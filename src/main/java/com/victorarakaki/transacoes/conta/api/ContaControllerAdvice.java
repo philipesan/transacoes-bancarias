@@ -1,6 +1,6 @@
 package com.victorarakaki.transacoes.conta.api;
 
-import com.victorarakaki.transacoes.conta.application.exception.CriarContaSaldoNegativaException;
+import com.victorarakaki.transacoes.conta.application.exception.CriarContaSaldoInvalidoException;
 import com.victorarakaki.transacoes.conta.application.exception.NomeInvalidoException;
 import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +18,14 @@ public class ContaControllerAdvice {
 
     private static final URI PROBLEMA_CONTA_INVALIDA = URI.create("/problemas/conta-invalida");
 
-    @ExceptionHandler(CriarContaSaldoNegativaException.class)
-    public ProblemDetail criarContaSaldoNegativo(CriarContaSaldoNegativaException ex) {
+    @ExceptionHandler(CriarContaSaldoInvalidoException.class)
+    public ProblemDetail criarContaSaldoInvalido(CriarContaSaldoInvalidoException ex) {
         if (log.isWarnEnabled()) {
-            log.warn("Conta não pode ter saldo negativo: {}", ex.getMessage());
+            log.warn("Conta não pode ser criada com saldo inválido ou negativo: {}", ex.getMessage());
         }
 
         return criarProblema(
-                "Conta com saldo negativo",
+                "Conta com saldo negativo ou inválido",
                 ex.getMessage(),
                 "CONTA_SALDO_NEGATIVO"
         );

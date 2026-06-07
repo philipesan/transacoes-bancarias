@@ -2,12 +2,15 @@ package com.victorarakaki.transacoes.comum;
 
 import java.net.URI;
 import java.util.List;
+
+import com.victorarakaki.transacoes.transferencia.application.exception.ContaNaoEncontradaException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -30,6 +33,28 @@ public class GlobalExceptionHandler {
 
     private static final URI PROBLEMA_ERRO_INTERNO =
             URI.create("/problemas/erro-interno");
+
+    private static final URI CONTA_NAO_ENCONTRADA =
+            URI.create("/problemas/conta-nao-encontrada");
+
+    private static final URI CORPO_REQUISICAO_INVALIDO = URI.create("/problemas/corpo-requisicao-invalido");
+
+
+    @ExceptionHandler(ContaNaoEncontradaException.class)
+    public ProblemDetail tratarContaNaoEncontrada(ContaNaoEncontradaException ex) {
+        if (log.isWarnEnabled()) {
+            log.warn("Conta não encontrada: {}", ex.getMessage());
+        }
+
+        return criarProblema(
+                HttpStatus.NOT_FOUND,
+                "Conta não encontrada",
+                ex.getMessage(),
+                CONTA_NAO_ENCONTRADA,
+                "CONTA_NAO_ENCONTRADA"
+        );
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail tratarValidacaoRequest(MethodArgumentNotValidException ex) {
@@ -56,6 +81,18 @@ public class GlobalExceptionHandler {
         problema.setProperty("erros", erros);
 
         return problema;
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail tratarMensagemNaoLegivel(HttpMessageNotReadableException exception) {
+
+        return  criarProblema(
+                HttpStatus.BAD_REQUEST,
+                "Corpo da requisição inválido",
+                "O corpo da requisição está ausente, malformado ou possui tipos de dados inválidos.",
+                CORPO_REQUISICAO_INVALIDO,
+                "REQUISICAO_INVALIDA"
+        );
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)

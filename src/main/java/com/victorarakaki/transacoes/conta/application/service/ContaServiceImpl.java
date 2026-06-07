@@ -2,6 +2,7 @@ package com.victorarakaki.transacoes.conta.application.service;
 
 import com.victorarakaki.transacoes.conta.application.Conta;
 import com.victorarakaki.transacoes.conta.application.cqrs.command.CriarContaCommand;
+import com.victorarakaki.transacoes.conta.application.exception.CriarContaSaldoInvalidoException;
 import com.victorarakaki.transacoes.conta.application.exception.NomeInvalidoException;
 import com.victorarakaki.transacoes.conta.infrastructure.ContaEntity;
 import com.victorarakaki.transacoes.conta.infrastructure.ContaEntityMapper;
@@ -52,7 +53,7 @@ public class ContaServiceImpl implements ContaService {
 
     if (Objects.isNull(comando.saldoInicial())
         || comando.saldoInicial().compareTo(BigDecimal.ZERO) < 0) {
-      throw new NomeInvalidoException("Tentativa de Criar conta com saldo negativo ou nulo");
+      throw new CriarContaSaldoInvalidoException("Tentativa de Criar conta com saldo negativo ou nulo");
     }
 
     log.info("Criação de conta: Dados válidos");

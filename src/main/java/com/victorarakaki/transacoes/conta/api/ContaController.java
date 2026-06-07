@@ -4,6 +4,7 @@ import com.victorarakaki.transacoes.conta.api.request.CriarContaRequestDTO;
 import com.victorarakaki.transacoes.conta.api.response.CriarContaResponseDTO;
 import com.victorarakaki.transacoes.conta.api.response.MovimentacaoResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,6 +39,24 @@ public interface ContaController {
   ResponseEntity<CriarContaResponseDTO> criarEspecie(
       @Valid @RequestBody CriarContaRequestDTO request);
 
+    @Operation(
+            summary = "Consultar movimentações da conta",
+            description = "Consulta as movimentações de uma conta pelo seu identificador")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Movimentações consultadas com sucesso",
+            content =
+            @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = MovimentacaoResponseDTO.class))))
+    @ApiResponse(
+            responseCode = "400",
+            description = "Identificador da conta inválido",
+            content = @Content(mediaType = "application/problem+json"))
+    @ApiResponse(
+            responseCode = "404",
+            description = "Conta não encontrada",
+            content = @Content(mediaType = "application/problem+json"))
     @GetMapping("/{contaId}/movimentacoes")
     public List<MovimentacaoResponseDTO> consultarMovimentacoes(@PathVariable UUID contaId);
 }
